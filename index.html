@@ -13,7 +13,6 @@
 
     <h1>NÓI KHÔNG VỚI MA TÚY</h1>
 
-    <!-- Thêm id="capture" vào đây để html2canvas chụp đúng vùng này -->
     <div class="avatar-container" id="capture">
 
         <img id="userImage" src="" alt="Ảnh người dùng">
@@ -68,19 +67,16 @@
         const downloadBtn = document.getElementById('downloadBtn');
         const captureArea = document.getElementById('capture');
 
-        // Các biến dùng để lưu trạng thái di chuyển ảnh bằng chuột/tay
         let isDragging = false;
         let startX = 0, startY = 0;
         let posX = 0, posY = 0; 
 
-        // 1. Chức năng Chọn và Hiện ảnh (Sửa lỗi chính của bạn)
+        // 1. Chức năng Chọn và Hiện ảnh
         upload.addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (file) {
                 const objectURL = URL.createObjectURL(file);
                 userImage.src = objectURL;
-                
-                // Trả các thanh cuộn và vị trí kéo về mặc định khi có ảnh mới
                 resetImageState();
             }
         });
@@ -103,31 +99,25 @@
         // 2. Chức năng Thu phóng ảnh
         zoomSlider.addEventListener('input', updateImageTransform);
 
-        // 3. LOGIC KÉO THẢ DI CHUYỂN ẢNH (BỔ SUNG CHO CẢ CHUỘT VÀ ĐIỆN THOẠI)
-        userImage.addEventListener('dragstart', (e) => e.preventDefault()); // Chặn kéo mặc định của trình duyệt
+        // 3. LOGIC KÉO THẢ DI CHUYỂN ẢNH
+        userImage.addEventListener('dragstart', (e) => e.preventDefault());
 
         function startDrag(e) {
             if (!userImage.src || userImage.src === window.location.href) return;
             isDragging = true;
             userImage.style.cursor = 'grabbing';
-            
-            // Lấy vị trí chuột hoặc tay chạm
             const clientX = e.clientX || (e.touches && e.touches[0].clientX);
             const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-            
             startX = clientX - posX;
             startY = clientY - posY;
         }
 
         function doDrag(e) {
             if (!isDragging) return;
-            
             const clientX = e.clientX || (e.touches && e.touches[0].clientX);
             const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-            
             posX = clientX - startX;
             posY = clientY - startY;
-            
             updateImageTransform();
         }
 
@@ -146,23 +136,24 @@
         window.addEventListener('touchmove', doDrag, { passive: false });
         window.addEventListener('touchend', stopDrag);
 
-        // 4. Chức năng Reset
+        // 4. Chức năng Reset thông minh (Chỉ đưa vị trí về ban đầu, giữ nguyên ảnh)
         resetBtn.addEventListener('click', function() {
-            upload.value = ''; // Xóa file trong input
-            userImage.src = ''; // Xóa ảnh hiển thị
+            if (!userImage.src || userImage.src === window.location.href) {
+                alert('Chưa có ảnh nào để căn chỉnh lại!');
+                return;
+            }
             resetImageState();
         });
 
-        // 5. Chức năng Tải ảnh xuống (Sử dụng html2canvas)
+        // 5. Chức năng Tải ảnh xuống
         downloadBtn.addEventListener('click', function() {
             if (!userImage.src || userImage.src === window.location.href) {
                 alert('Vui lòng chọn ảnh trước khi tải về!');
                 return;
             }
 
-            // Tiến hành chụp khung avatar và tải về
             html2canvas(captureArea, {
-                useCORS: true, // Hỗ trợ tải ảnh nếu có dính bản quyền cors
+                useCORS: true,
                 allowTaint: true,
                 backgroundColor: null
             }).then(canvas => {
