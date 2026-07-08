@@ -68,6 +68,11 @@
         const downloadBtn = document.getElementById('downloadBtn');
         const captureArea = document.getElementById('capture');
 
+        // Các biến dùng để lưu trạng thái di chuyển ảnh bằng chuột/tay
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let posX = 0, posY = 0; 
+
         // 1. Chức năng Chọn và Hiện ảnh (Sửa lỗi chính của bạn)
         upload.addEventListener('change', function(event) {
             const file = event.target.files[0];
@@ -75,27 +80,80 @@
                 const objectURL = URL.createObjectURL(file);
                 userImage.src = objectURL;
                 
-                // Trả các thanh cuộn về mặc định khi có ảnh mới
-                zoomSlider.value = 100;
-                userImage.style.transform = 'translate(-50%, -50%) scale(1)';
+                // Trả các thanh cuộn và vị trí kéo về mặc định khi có ảnh mới
+                resetImageState();
             }
         });
 
-        // 2. Chức năng Thu phóng ảnh
-        zoomSlider.addEventListener('input', function() {
+        // Hàm cập nhật vị trí kéo kết hợp thu phóng
+        function updateImageTransform() {
             const scaleValue = zoomSlider.value / 100;
-            userImage.style.transform = `translate(-50%, -50%) scale(${scaleValue})`;
-        });
+            userImage.style.transform = `translate(calc(-50% + ${posX}px), calc(-50% + ${posY}px)) scale(${scaleValue})`;
+        }
 
-        // 3. Chức năng Reset
+        // Hàm đưa ảnh về trạng thái ban đầu
+        function resetImageState() {
+            posX = 0;
+            posY = 0;
+            zoomSlider.value = 100;
+            userImage.style.transform = 'translate(-50%, -50%) scale(1)';
+            userImage.style.cursor = 'grab';
+        }
+
+        // 2. Chức năng Thu phóng ảnh
+        zoomSlider.addEventListener('input', updateImageTransform);
+
+        // 3. LOGIC KÉO THẢ DI CHUYỂN ẢNH (BỔ SUNG CHO CẢ CHUỘT VÀ ĐIỆN THOẠI)
+        userImage.addEventListener('dragstart', (e) => e.preventDefault()); // Chặn kéo mặc định của trình duyệt
+
+        function startDrag(e) {
+            if (!userImage.src || userImage.src === window.location.href) return;
+            isDragging = true;
+            userImage.style.cursor = 'grabbing';
+            
+            // Lấy vị trí chuột hoặc tay chạm
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            startX = clientX - posX;
+            startY = clientY - posY;
+        }
+
+        function doDrag(e) {
+            if (!isDragging) return;
+            
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            posX = clientX - startX;
+            posY = clientY - startY;
+            
+            updateImageTransform();
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            userImage.style.cursor = 'grab';
+        }
+
+        // Sự kiện chuột máy tính
+        userImage.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', doDrag);
+        window.addEventListener('mouseup', stopDrag);
+
+        // Sự kiện cảm ứng trên điện thoại
+        userImage.addEventListener('touchstart', startDrag, { passive: true });
+        window.addEventListener('touchmove', doDrag, { passive: false });
+        window.addEventListener('touchend', stopDrag);
+
+        // 4. Chức năng Reset
         resetBtn.addEventListener('click', function() {
             upload.value = ''; // Xóa file trong input
             userImage.src = ''; // Xóa ảnh hiển thị
-            zoomSlider.value = 100; // Đưa thu phóng về 100%
-            userImage.style.transform = 'translate(-50%, -50%) scale(1)';
+            resetImageState();
         });
 
-        // 4. Chức năng Tải ảnh xuống (Sử dụng html2canvas)
+        // 5. Chức năng Tải ảnh xuống (Sử dụng html2canvas)
         downloadBtn.addEventListener('click', function() {
             if (!userImage.src || userImage.src === window.location.href) {
                 alert('Vui lòng chọn ảnh trước khi tải về!');
