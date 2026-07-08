@@ -1,0 +1,158 @@
+ body{
+    margin:0;
+    padding:20px;
+    background:#f3f3f3;
+    font-family:Arial, Helvetica, sans-serif;
+    text-align:center;
+}
+
+h1{
+    color:#d60000;
+    margin-bottom:20px;
+}
+
+.avatar-container{
+
+    width:400px;
+    height:400px;
+
+    margin:auto;
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:white;
+
+    border-radius:20px;
+
+    box-shadow:0 0 20px rgba(0,0,0,.2);
+
+}
+
+/* Ảnh người dùng */
+
+#userImage{
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:auto;
+
+    cursor:grab;
+
+    user-select:none;
+
+    transform-origin:center center;
+
+    z-index:1;
+
+}
+
+/* Khung PNG */
+
+#frame{
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    object-fit:contain;
+
+    pointer-events:none;
+
+    z-index:2;
+
+}
+
+/* Khu vực nút */
+
+.controls{
+
+    margin-top:20px;
+
+}
+
+.controls input{
+
+    margin-right:10px;
+
+}
+
+.controls button{
+
+    margin:5px;
+
+    padding:10px 18px;
+
+    font-size:16px;
+
+    border:none;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    background:#d60000;
+
+    color:white;
+
+}
+
+.controls button:hover{
+
+    background:#b10000;
+
+}
+
+/* Thanh Zoom */
+
+.zoom-control{
+
+    width:400px;
+
+    margin:20px auto;
+
+}
+
+.zoom-control label{
+
+    display:block;
+
+    margin-bottom:10px;
+
+    font-weight:bold;
+
+}
+
+#zoomSlider{
+
+    width:100%;
+
+}
+
+/* Responsive cho điện thoại */
+
+@media (max-width:600px){
+
+    .avatar-container{
+
+        width:320px;
+        height:320px;
+
+    }
+
+    .zoom-control{
+
+        width:320px;
+
+    }
+
+}

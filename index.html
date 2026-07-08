@@ -1,0 +1,66 @@
+ <!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khung Avatar - Nói không với ma túy</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>NÓI KHÔNG VỚI MA TÚY</h1>
+
+    <div class="avatar-container">
+
+        <img id="userImage" src="" alt="Ảnh người dùng">
+
+        <img id="frame"
+             src="assets/avatar-frame.png"
+             alt="Khung Avatar">
+
+    </div>
+
+    <div class="controls">
+
+        <input
+            type="file"
+            id="upload"
+            accept="image/*">
+
+        <button id="resetBtn">
+            🔄 Reset
+        </button>
+
+        <button id="downloadBtn">
+            💾 Tải ảnh
+        </button>
+
+    </div>
+
+    <div class="zoom-control">
+
+        <label for="zoomSlider">
+            🔍 Thu phóng
+        </label>
+
+        <input
+            type="range"
+            id="zoomSlider"
+            min="20"
+            max="300"
+            value="100">
+
+    </div>
+
+    <!-- Thư viện chụp ảnh -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+    <!-- JavaScript của website -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>
