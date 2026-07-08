@@ -13,13 +13,13 @@
 
     <h1>NÓI KHÔNG VỚI MA TÚY</h1>
 
-    <div class="avatar-container">
+    <div class="avatar-container" id="capture">
 
         <img id="userImage" src="" alt="Ảnh người dùng">
 
         <img id="frame"
-             src="assets/avatar-frame.png"
-             alt="Khung Avatar">
+     src="assets/frames/avatar-frame.png"
+     alt="Khung Avatar">
 
     </div>
 
@@ -58,8 +58,112 @@
     <!-- Thư viện chụp ảnh -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-    <!-- JavaScript của website -->
-    <script src="script.js"></script>
+    <!-- JavaScript xử lý toàn bộ chức năng của website -->
+    <script>
+        const upload = document.getElementById('upload');
+        const userImage = document.getElementById('userImage');
+        const zoomSlider = document.getElementById('zoomSlider');
+        const resetBtn = document.getElementById('resetBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const captureArea = document.getElementById('capture');
+
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let posX = 0, posY = 0; 
+
+        // 1. Chức năng Chọn và Hiện ảnh
+        upload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const objectURL = URL.createObjectURL(file);
+                userImage.src = objectURL;
+                resetImageState();
+            }
+        });
+
+        // Hàm cập nhật vị trí kéo kết hợp thu phóng
+        function updateImageTransform() {
+            const scaleValue = zoomSlider.value / 100;
+            userImage.style.transform = `translate(calc(-50% + ${posX}px), calc(-50% + ${posY}px)) scale(${scaleValue})`;
+        }
+
+        // Hàm đưa ảnh về trạng thái ban đầu
+        function resetImageState() {
+            posX = 0;
+            posY = 0;
+            zoomSlider.value = 100;
+            userImage.style.transform = 'translate(-50%, -50%) scale(1)';
+            userImage.style.cursor = 'grab';
+        }
+
+        // 2. Chức năng Thu phóng ảnh
+        zoomSlider.addEventListener('input', updateImageTransform);
+
+        // 3. LOGIC KÉO THẢ DI CHUYỂN ẢNH
+        userImage.addEventListener('dragstart', (e) => e.preventDefault());
+
+        function startDrag(e) {
+            if (!userImage.src || userImage.src === window.location.href) return;
+            isDragging = true;
+            userImage.style.cursor = 'grabbing';
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            startX = clientX - posX;
+            startY = clientY - posY;
+        }
+
+        function doDrag(e) {
+            if (!isDragging) return;
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            posX = clientX - startX;
+            posY = clientY - startY;
+            updateImageTransform();
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            userImage.style.cursor = 'grab';
+        }
+
+        // Sự kiện chuột máy tính
+        userImage.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', doDrag);
+        window.addEventListener('mouseup', stopDrag);
+
+        // Sự kiện cảm ứng trên điện thoại
+        userImage.addEventListener('touchstart', startDrag, { passive: true });
+        window.addEventListener('touchmove', doDrag, { passive: false });
+        window.addEventListener('touchend', stopDrag);
+
+        // 4. Chức năng Reset thông minh (Chỉ đưa vị trí về ban đầu, giữ nguyên ảnh)
+        resetBtn.addEventListener('click', function() {
+            if (!userImage.src || userImage.src === window.location.href) {
+                alert('Chưa có ảnh nào để căn chỉnh lại!');
+                return;
+            }
+            resetImageState();
+        });
+
+        // 5. Chức năng Tải ảnh xuống
+        downloadBtn.addEventListener('click', function() {
+            if (!userImage.src || userImage.src === window.location.href) {
+                alert('Vui lòng chọn ảnh trước khi tải về!');
+                return;
+            }
+
+            html2canvas(captureArea, {
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'avatar-noi-khong-voi-ma-tuy.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+    </script>
 
 </body>
 
