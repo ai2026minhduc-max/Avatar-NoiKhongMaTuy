@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khung Avatar - Nói không với ma túy</title>
-
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -36,28 +38,53 @@
 
     </div>
 
-    <div class="controls">
+ <div class="controls">
 
-        <input
-            type="file"
-            id="upload"
-            accept="image/*">
+    <label for="upload" class="btn btn-upload">
 
-        <button id="resetBtn">
-            🔄 Reset
-        </button>
+    <i class="fa-solid fa-folder-open"></i>
 
-        <button id="downloadBtn">
-            💾 Tải ảnh
-        </button>
+    Chọn ảnh
 
-    </div>
+</label>
+
+    <input
+        type="file"
+        id="upload"
+        accept="image/*"
+        hidden>
+
+    <button
+        id="resetBtn"
+        class="btn btn-reset">
+
+       <i class="fa-solid fa-rotate-left"></i>
+
+Reset
+
+    </button>
+
+    <button
+        id="downloadBtn"
+        class="btn btn-download">
+
+       <i class="fa-solid fa-download"></i>
+
+Tải ảnh
+
+    </button>
+
+</div>
 
     <div class="zoom-control">
 
-        <label for="zoomSlider">
-            🔍 Thu phóng
-        </label>
+        <<label for="zoomSlider">
+
+    <i class="fa-solid fa-magnifying-glass"></i>
+
+    Thu phóng
+
+</label>
 
         <input
             type="range"
